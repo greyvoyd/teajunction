@@ -1,0 +1,3969 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Tea Junction Cafe | Digital Menu</title>
+
+  <style>
+    :root{
+       --teal:#559f9f;
+       --teal-dark:#2f7778;
+       --teal-soft:#eaf5f5;
+       --ink:#24445b;
+       --muted:#6f8493;
+       --bg:#eef1f4;
+       --white:#ffffff;
+       --line:#e8edf0;
+       --tab:#f6f7f8;
+       --shadow:0 8px 22px rgba(25,47,66,.09);
+       --radius:12px;
+       --header-h:60px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:auto;overflow-y:auto}
+    body{
+      margin:0;
+      min-height:100vh;
+      overflow-x:hidden;
+      overflow-y:auto;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color:#ffffff;
+      background:var(--bg);
+      -webkit-font-smoothing:antialiased;
+      -webkit-overflow-scrolling:touch;
+    }
+    body.modal-open{overflow:hidden}
+    button,input{font:inherit}
+    button{color:inherit}
+    img{display:block;max-width:100%}
+
+    .app{
+      width:min(100%, 520px);
+      min-height:100vh;
+      margin:0 auto;
+      background:var(--white);
+      overflow:visible;
+      box-shadow:0 0 50px rgba(0,0,0,.05);
+    }
+
+    /* =========================================================
+       TOP HEADER
+       This is always sticky.
+       ========================================================= */
+    .sticky-stack{
+      position:fixed;
+      top:0;
+      left:50%;
+      transform:translateX(-50%);
+      width:min(100%, 520px);
+      z-index:999;
+      background:rgba(255,255,255,.99);
+      box-shadow:0 2px 10px rgba(25,47,66,.08);
+    }
+
+    .sticky-spacer{
+      height:var(--sticky-stack-height, 112px);
+    }
+
+    .topbar{
+      position:relative;
+      z-index:2;
+      min-height:var(--header-h);
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:12px;
+      padding:9px 17px;
+      background:rgba(255,255,255,.98);
+      border-bottom:1px solid rgba(232,237,240,.9);
+      backdrop-filter:blur(12px);
+    }
+
+    .header-side{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .round-btn{
+      width:39px;
+      height:39px;
+      flex:0 0 39px;
+      display:grid;
+      place-items:center;
+      border:0;
+      border-radius:50%;
+      background:#d71920;
+      color:#ffffff;
+      cursor:pointer;
+      transition:transform .16s ease, background .16s ease;
+    }
+
+    .round-btn:hover{background:#b8141a}
+    .round-btn:focus-visible{outline:3px solid rgba(215,25,32,.20);outline-offset:2px;background:#c5161d}
+    .round-btn:active{transform:scale(.96);background:#931015}
+
+    .round-btn svg{
+      width:20px;
+      height:20px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:2;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+
+    /* =========================================================
+       HERO IMAGE
+       It scrolls normally and is NOT sticky.
+       To replace it, add assets/menu/hero.jpg
+       ========================================================= */
+    .hero-wrap{
+      padding:0 17px;
+      background:#fff;
+    }
+    .hero{
+      position:relative;
+      overflow:hidden;
+      width:100%;
+      aspect-ratio:1.55 / 1;
+      border-radius:14px;
+      background:linear-gradient(135deg,#dce8e8,#b9cece);
+    }
+    .hero img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    /* =========================================================
+       CATEGORY BAR
+       The header and categories are kept together in one FIXED stack.
+       This guarantees they remain visible at the top for the entire page scroll,
+       including inside Preview/iframe environments where sticky can behave inconsistently.
+       ========================================================= */
+    .category-nav{
+      direction:ltr;
+      position:relative;
+      z-index:1;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 14px;
+      background:rgba(255,255,255,.98);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(10px);
+    }
+
+    .category-menu-btn{
+       width:30px;
+       height:36px;
+       flex:0 0 30px;
+       display:grid;
+       place-items:center;
+       border:0;
+       background:transparent;
+       color:#d71920;
+       cursor:pointer;
+    }
+    .category-menu-btn svg{
+      width:20px;
+      height:20px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:2.2;
+      stroke-linecap:round;
+    }
+
+    .category-menu-btn:hover{color:#b8141a}
+    .category-menu-btn:active{color:#931015}
+
+    .category-track{
+      min-width:0;
+      flex:1;
+      display:flex;
+      flex-direction:row;
+      direction:ltr;
+      align-items:center;
+      gap:7px;
+      overflow-x:auto;
+      scrollbar-width:none;
+      scroll-behavior:smooth;
+      overscroll-behavior-x:contain;
+    }
+    .category-track::-webkit-scrollbar{display:none}
+
+    .category-btn{
+       flex:0 0 auto;
+       border:0;
+       border-radius:7px;
+       background:#f6f7f8;
+       color:#24445b;
+       padding:9px 13px;
+       font-size:.86rem;
+       line-height:1;
+       font-weight:500;
+       white-space:nowrap;
+       cursor:pointer;
+       transition:.15s ease;
+    }
+    .category-btn.active{
+       background:#d71920;
+       color:#ffffff;
+    }
+
+    .intro{
+      margin:0;
+      padding:32px 18px 4px;
+      font-size:.91rem;
+      line-height:1.55;
+      color:var(--ink);
+    }
+
+    .menu-content{
+      padding:0 17px 58px;
+      overflow:visible;
+    }
+
+    .menu-section{
+      padding-top:42px;
+      scroll-margin-top:calc(var(--sticky-stack-height, 112px) + 12px);
+    }
+
+    .section-title{
+      margin:0 0 18px;
+      font-size:1.18rem;
+      line-height:1.2;
+      font-weight:800;
+      letter-spacing:-.01em;
+      color:var(--ink);
+    }
+
+    .product-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:18px 18px;
+    }
+
+    .product-card{
+      min-width:0;
+      overflow:hidden;
+      border-radius:7px;
+      background:#fff;
+      box-shadow:var(--shadow);
+      cursor:pointer;
+      border:1px solid rgba(232,237,240,.8);
+      transition:transform .16s ease, box-shadow .16s ease;
+    }
+    .product-card:active{transform:scale(.992)}
+
+    .product-image{
+      position:relative;
+      aspect-ratio:1.17 / 1;
+      overflow:hidden;
+      background:#dfe7e8;
+    }
+    .product-image img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .product-body{
+      padding:12px 11px 13px;
+    }
+
+    .product-name{
+      margin:0;
+      font-size:.93rem;
+      line-height:1.28;
+      font-weight:500;
+      color:var(--ink);
+    }
+
+    .dietary{
+      min-height:0;
+      margin:2px 0 0;
+      color:#8ea0ad;
+      font-size:.71rem;
+      line-height:1.25;
+      font-style:italic;
+    }
+
+    .product-desc{
+      margin:5px 0 0;
+      min-height:0;
+      color:#617d91;
+      font-size:.78rem;
+      line-height:1.45;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+    }
+
+    .price-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:5px;
+    }
+
+    .price{
+      font-size:.82rem;
+      font-weight:750;
+      color:var(--ink);
+    }
+
+
+    .old-price{
+      color:#a0abb2;
+      font-size:.76rem;
+      text-decoration:line-through;
+    }
+
+    .custom-badge{
+      display:inline-flex;
+      margin-top:8px;
+      padding:4px 7px;
+      border-radius:999px;
+      background:var(--teal-soft);
+      color:var(--teal-dark);
+      font-size:.64rem;
+      font-weight:800;
+    }
+
+    .no-results{
+      display:none;
+      padding:40px 20px 90px;
+      text-align:center;
+      color:var(--muted);
+    }
+    .no-results.show{display:block}
+
+    .footer{
+      padding:20px 18px max(32px,env(safe-area-inset-bottom));
+      border-top:1px solid var(--line);
+      color:#7c8e9a;
+      text-align:center;
+      font-size:.77rem;
+      line-height:1.6;
+    }
+
+    /* =========================================================
+       BOTTOM SHEETS
+       ========================================================= */
+    .overlay{
+      position:fixed;
+      inset:0;
+      z-index:120;
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      background:rgba(18,34,47,.46);
+    }
+    .overlay.open{display:flex}
+
+    .sheet{
+      direction:ltr;
+      width:min(100%,520px);
+      max-height:88vh;
+      overflow-y:auto;
+      background:#fff;
+      border-radius:22px 22px 0 0;
+      box-shadow:0 -18px 50px rgba(0,0,0,.22);
+      padding-bottom:max(16px,env(safe-area-inset-bottom));
+      overscroll-behavior:contain;
+    }
+
+    .sheet-handle{
+      width:42px;
+      height:4px;
+      margin:9px auto 3px;
+      border-radius:999px;
+      background:#d7dde0;
+    }
+
+    .sheet-head{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:10px;
+      padding:10px 16px 12px;
+      border-bottom:1px solid var(--line);
+    }
+    .sheet-head h2{
+      margin:0;
+      font-size:1.05rem;
+    }
+    .close-btn svg{stroke:#111111;}
+
+    .close-btn{
+       width:34px;
+       height:34px;
+       padding:0;
+       border:0;
+       outline:none;
+       box-shadow:none;
+       appearance:none;
+       -webkit-appearance:none;
+       border-radius:50%;
+       background:#f1f4f5;
+       color:#111111;
+       font-size:1.15rem;
+       line-height:1;
+       cursor:pointer;
+       display:grid;
+       place-items:center;
+    }
+    .close-btn:focus,
+    .close-btn:focus-visible{
+       outline:none;
+       box-shadow:none;
+    }
+
+    .language-list,
+    .category-sheet-list{
+      display:grid;
+      gap:8px;
+      padding:14px;
+      direction:ltr;
+    }
+
+    .language-option,
+     .category-sheet-btn{
+       width:100%;
+       display:flex;
+       align-items:center;
+       justify-content:flex-end;
+       gap:12px;
+       border:1px solid #e8edf0;
+       border-radius:11px;
+       background:#ffffff;
+       padding:13px 14px;
+       text-align:start;
+       cursor:pointer;
+    }
+
+    .language-option{color:#24445b;}
+
+    .category-sheet-btn{
+      color:#24445b;
+      direction:ltr;
+      text-align:left;
+    }
+
+    .language-option.active,
+     .category-sheet-btn.active{
+       border-color:#d71920;
+       background:#fff0f0;
+       color:#24445b;
+     }
+
+    .language-option span:first-child,
+    .category-sheet-btn span:first-child{
+      font-weight:700;
+    }
+
+    .check{
+       color:#d71920;
+       font-weight:900;
+    }
+
+    .detail-image{
+      width:100%;
+      aspect-ratio:1.4 / 1;
+      overflow:hidden;
+      background:#dfe7e8;
+    }
+    .detail-image img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .detail-content{
+      padding:16px;
+    }
+    .detail-category{
+      color:#d71920;
+      font-size:.70rem;
+      font-weight:850;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+    }
+    .detail-content h2{
+      margin:6px 0;
+      font-size:1.3rem;
+      line-height:1.2;
+    }
+    .detail-price{
+      font-size:.95rem;
+      font-weight:850;
+    }
+    .detail-desc{
+      margin:12px 0 0;
+      color:#657f91;
+      font-size:.88rem;
+      line-height:1.55;
+    }
+    .modifier{
+      margin-top:15px;
+      padding-top:13px;
+      border-top:1px solid var(--line);
+    }
+    .modifier h3{
+      margin:0 0 5px;
+      font-size:.78rem;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+    .modifier p{
+      margin:0;
+      color:#6d8290;
+      font-size:.85rem;
+      line-height:1.5;
+    }
+
+    .info-content span{white-space:pre-line;}
+
+    .info-content{
+      padding:2px 16px 18px;
+      color:#657b8a;
+      font-size:.88rem;
+      line-height:1.6;
+    }
+    .info-row{
+      padding:13px 0;
+      border-bottom:1px solid var(--line);
+    }
+    .info-row:last-child{border-bottom:0}
+    .connect-row{ text-align:left }
+
+    .social-links{
+      justify-content:flex-start;
+      display:flex;
+      gap:14px;
+      padding:10px 0 4px;
+      align-items:center;
+    }
+    .social-links a{
+      width:38px;
+      height:38px;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      background:#f6f7f8;
+      color:#d71920;
+      text-decoration:none;
+      transition:.15s ease;
+    }
+    .social-links a:hover{transform:scale(1.05);}
+    .social-links svg{
+      width:21px;
+      height:21px;
+      fill:currentColor;
+    }
+    .info-row strong{
+      display:block;
+      margin-bottom:2px;
+      color:var(--ink);
+    }
+
+
+
+    /* Product popup text theme adjustment */
+    .sheet,
+    .sheet h2,
+    .detail-content h2,
+    .detail-price,
+    .modifier h3,
+    .sheet-head h2{
+      color:var(--ink);
+    }
+
+    .detail-desc{
+      color:var(--muted);
+    }
+
+    .modifier p{
+      color:var(--muted);
+    }
+
+    .info-content,
+    .info-content span{
+      color:var(--muted);
+    }
+
+    @media (min-width:680px){
+      body{padding:18px 0}
+      .app{border-radius:22px}
+      .sticky-stack{
+        top:0;
+        border-radius:0 0 16px 16px;
+      }
+      .product-grid{gap:20px}
+      .overlay{align-items:flex-end;padding:0}
+      .sheet{border-radius:22px 22px 0 0}
+    }
+
+    @media (prefers-reduced-motion:reduce){
+      *,*::before,*::after{
+        scroll-behavior:auto!important;
+        transition:none!important;
+      }
+    }
+  
+.footer-connect{
+  margin-top:10px;
+  text-align:center;
+}
+.footer-connect .social-links{
+  justify-content:center;
+  padding:12px 0 0;
+}
+.footer-connect strong{
+  display:block;
+  margin-bottom:12px;
+  color:var(--ink);
+}
+
+/* FINAL CATEGORY ALIGNMENT FIX */
+#categoryOverlay,
+#categoryOverlay .sheet,
+#categoryOverlay .sheet-head,
+#categoryOverlay .category-sheet-list,
+#categoryOverlay .category-sheet-btn{
+  direction:ltr !important;
+}
+
+#categoryOverlay .sheet-head{
+  justify-content:space-between !important;
+}
+
+#categoryOverlay .sheet-head h2{
+  text-align:left !important;
+  direction:ltr !important;
+}
+
+#categoryOverlay .category-sheet-list{
+  text-align:left !important;
+}
+
+#categoryOverlay .category-sheet-btn{
+  justify-content:flex-start !important;
+  text-align:left !important;
+}
+
+#categoryOverlay .category-sheet-btn span:first-child{
+  margin-right:auto !important;
+}
+
+#categoryOverlay .check{
+  margin-left:auto !important;
+}
+
+</style>
+</head>
+
+<body>
+<main class="app">
+
+  <div class="sticky-stack">
+    <header class="topbar">
+
+      <div class="header-side">
+        <button class="round-btn" id="languageBtn" aria-label="Language">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M3.5 12h17M12 3.5c2.3 2.3 3.6 5.1 3.6 8.5S14.3 18.2 12 20.5c-2.3-2.3-3.6-5.1-3.6-8.5S9.7 5.8 12 3.5Z"></path></svg>
+        </button>
+
+        <a class="round-btn" href="tel:YOUR_PHONE_NUMBER" aria-label="Call">
+          <svg viewBox="0 0 24 24">
+            <path d="M6.5 4.5 9 3l2.2 4.8-2 1.4a15 15 0 0 0 5.6 5.6l1.4-2L21 15l-1.5 2.5c-.7 1.2-2.1 1.8-3.4 1.4C9.8 17.2 6.8 14.2 5.1 8c-.4-1.3.2-2.7 1.4-3.5Z"></path>
+          </svg>
+        </a>
+
+        <button class="round-btn" id="infoBtn" aria-label="Information">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 10.5v5.5M12 7.5h.01"></path></svg>
+        </button>
+      </div>
+    </header>
+
+    <nav class="category-nav" aria-label="Menu categories">
+      <button class="category-menu-btn" id="categoryMenuBtn" aria-label="All categories">
+        <svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h14"></path></svg>
+      </button>
+      <div class="category-track" id="categoryTrack"></div>
+    </nav>
+  </div>
+
+  <div class="sticky-spacer" aria-hidden="true"></div>
+
+  <section class="hero-wrap">
+    <div class="hero">
+      <img
+        src="assets/menu/hero.jpg"
+        alt="Tea Junction Cafe"
+      >
+    </div>
+  </section>
+
+  <p class="intro" id="introText">
+    Fresh & made with love. Available from 10:00 PM to 05:00 AM.
+  </p>
+
+  <div class="menu-content" id="menuContent"></div>
+  <div class="no-results" id="noResults">No menu items found.</div>
+
+  <footer class="footer">
+  <div class="footer-connect">
+    <strong>Connect With Us</strong>
+    <div class="social-links">
+      <a href="https://www.instagram.com/teajunctionalnahda" target="_blank" aria-label="Instagram">
+        <svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7Zm5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5Zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5ZM17.5 6.5a1 1 0 1 1-1 1 1 1 0 0 1 1-1Z"/></svg>
+      </a>
+      <a href="https://www.facebook.com/nahda_teajunction" target="_blank" aria-label="Facebook">
+        <svg viewBox="0 0 24 24"><path d="M13.5 22v-8h2.7l.4-3h-3.1V9.1c0-.9.3-1.6 1.7-1.6h1.6V4.8c-.3 0-1.4-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V11H7.5v3h2.6v8h3.4Z"/></svg>
+      </a>
+      <a href="https://maps.app.goo.gl/zUHLmXLNqbTVLLrr9" target="_blank" aria-label="Google Maps">
+        <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.3 7 13 7 13s7-7.7 7-13a7 7 0 0 0-7-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/></svg>
+      </a>
+      <a href="https://wa.me/971547473235" target="_blank" aria-label="WhatsApp">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l4.9-1.3A10 10 0 1 0 12 2Zm0 2a8 8 0 0 1 0 16 7.9 7.9 0 0 1-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 0 1 12 4Zm-4 4.5c-.2 0-.5.1-.7.4-.2.3-.8.8-.8 1.9s.8 2.2.9 2.3c.1.2 1.6 2.5 3.9 3.4 1.9.7 2.3.6 2.7.6.4 0 1.3-.5 1.5-1 .2-.5.2-.9.1-1-.1-.1-.4-.2-.8-.4l-1.2-.6c-.2-.1-.4-.1-.6.1l-.5.7c-.1.2-.3.2-.5.1-.7-.3-1.3-.7-1.8-1.2-.5-.5-.9-1.1-1.2-1.8-.1-.2 0-.4.1-.5l.4-.5c.1-.2.1-.4 0-.6l-.6-1.4c-.1-.3-.3-.5-.7-.5Z"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+</main>
+
+<!-- Language -->
+<div class="overlay" id="languageOverlay" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <h2 data-ui="chooseLanguage">Choose language</h2>
+      <button class="close-btn" data-close="languageOverlay" aria-label="Close">×</button>
+    </div>
+    <div class="language-list">
+      <button class="language-option active" data-lang="en">
+        <span>English</span><span class="check">✓</span>
+      </button>
+      <button class="language-option" data-lang="ar">
+        <span>العربية</span><span class="check"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Categories -->
+<div class="overlay" id="categoryOverlay" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <h2 data-ui="categoriesTitle">Menu categories</h2>
+      <button class="close-btn" data-close="categoryOverlay" aria-label="Close">×</button>
+    </div>
+    <div class="category-sheet-list" id="categorySheetList"></div>
+  </div>
+</div>
+
+<!-- Product details -->
+<div class="overlay" id="detailOverlay" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <h2 data-ui="itemDetails">Item details</h2>
+      <button class="close-btn" data-close="detailOverlay" aria-label="Close">×</button>
+    </div>
+    <div id="detailBody"></div>
+  </div>
+</div>
+
+<!-- Information -->
+<div class="overlay" id="infoOverlay" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <h2 data-ui="information">Information</h2>
+      <button class="close-btn" data-close="infoOverlay" aria-label="Close">×</button>
+    </div>
+
+    <div class="info-content">
+      <div class="info-row">
+        <strong data-ui="openingHours">Opening Hours</strong>
+        <span>Open 24 Hrs</span>
+      </div>
+      <div class="info-row">
+        <strong data-ui="location">Our Location</strong>
+        <span data-ui="infoText">Tea Junction Cafe\nBori Building 7A St - Near Subway\nAl Nahda Second - Al Nahda - Dubai</span>
+      </div>
+      <div class="info-row connect-row">
+        <strong>Connect With Us</strong>
+        <div class="social-links">
+          <a href="https://www.instagram.com/teajunctionalnahda" target="_blank" aria-label="Instagram">
+            <svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7Zm5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5Zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5ZM17.5 6.5a1 1 0 1 1-1 1 1 1 0 0 1 1-1Z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/nahda_teajunction" target="_blank" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M13.5 22v-8h2.7l.4-3h-3.1V9.1c0-.9.3-1.6 1.7-1.6h1.6V4.8c-.3 0-1.4-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V11H7.5v3h2.6v8h3.4Z"/></svg>
+          </a>
+          <a href="https://maps.app.goo.gl/zUHLmXLNqbTVLLrr9" target="_blank" aria-label="Google Maps">
+            <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.3 7 13 7 13s7-7.7 7-13a7 7 0 0 0-7-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/></svg>
+          </a>
+          <a href="https://wa.me/971547473235" target="_blank" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l4.9-1.3A10 10 0 1 0 12 2Zm0 2a8 8 0 0 1 0 16 7.9 7.9 0 0 1-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 0 1 12 4Zm-4 4.5c-.2 0-.5.1-.7.4-.2.3-.8.8-.8 1.9s.8 2.2.9 2.3c.1.2 1.6 2.5 3.9 3.4 1.9.7 2.3.6 2.7.6.4 0 1.3-.5 1.5-1 .2-.5.2-.9.1-1-.1-.1-.4-.2-.8-.4l-1.2-.6c-.2-.1-.4-.1-.6.1l-.5.7c-.1.2-.3.2-.5.1-.7-.3-1.3-.7-1.8-1.2-.5-.5-.9-1.1-1.2-1.8-.1-.2 0-.4.1-.5l.4-.5c.1-.2.1-.4 0-.6l-.6-1.4c-.1-.3-.3-.5-.7-.5Z"/></svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<script>
+  const UI = {
+    en:{
+      chooseLanguage:"Choose Language",
+      categoriesTitle:"Menu Categories",
+      itemDetails:"Item Details",
+      information:"Information",
+      openingHours:"Opening Hours",
+      pricing:"Pricing",
+      pricingNote:"All Prices Are In Aed And Include 5% Vat, 7% Municipality Fee And 10% Service Charge.",
+      location:"Our Location",
+      infoText:"Tea Junction Cafe\nbori Building 7a St - Near Subway\nal Nahda Second - Al Nahda - Dubai",
+      intro:"Fresh & Made With Love. Available From 10:00 Pm To 05:00 Am.",
+      noResults:"No Menu Items Found.",
+      custom:"Customize"
+    },
+    ar:{
+      chooseLanguage:"اختر اللغة",
+      categoriesTitle:"أقسام القائمة",
+      itemDetails:"تفاصيل الصنف",
+      information:"معلومات",
+      openingHours:"ساعات العمل",
+      pricing:"الأسعار",
+      pricingNote:"جميع الأسعار بالدرهم الإماراتي وتشمل 5% ضريبة القيمة المضافة و7% رسوم البلدية و10% رسوم الخدمة.",
+      location:"الموقع",
+      infoText:"قائمة ليلية تشمل الوجبات السريعة والبيتزا والبرغر والسندويتشات والإضافات والسموذي والوجبات الخفيفة والآيس كريم والمشروبات.",
+      intro:"طازج ومحضر بحب. متاح من 10:00 مساءً حتى 05:00 صباحاً.",
+      noResults:"لم يتم العثور على أصناف.",
+      custom:"تخصيص"
+    }
+  };
+
+  const CAT = {
+    "tj-hot-beverages":{en:"Hot Beverages", ar:"Hot Beverages"},
+    "wrap-sandwiches":{en:"Wrap Sandwiches", ar:"Wrap Sandwiches"},
+    "burgers":{en:"Burgers", ar:"Burgers"},
+    "sandwiches":{en:"Sandwiches", ar:"Sandwiches"},
+    "paratha-sandwiches":{en:"Paratha Sandwiches", ar:"Paratha Sandwiches"},
+    "healthy-juices":{en:"Healthy Juices", ar:"Healthy Juices"},
+    "club-sandwiches":{en:"Club Sandwiches", ar:"Club Sandwiches"},
+    "mix-juices":{en:"Mix Juices", ar:"Mix Juices"},
+    "fresh-juice":{en:"Fresh Juice", ar:"Fresh Juice"},
+    "falooda":{en:"Falooda", ar:"Falooda"},
+    "mojito":{en:"Mojito", ar:"Mojito"},
+    "sarbath":{en:"Sarbath", ar:"Sarbath"},
+    "lassi":{en:"Lassi", ar:"Lassi"},
+    "shake":{en:"Shake", ar:"Shake"}
+  };
+
+  /*
+    IMAGE SYSTEM
+    ------------
+    Do not edit image paths one-by-one in the HTML.
+
+    Each item's image is loaded automatically using its id:
+      assets/menu/<item-id>.jpg
+
+    Example:
+      item id = chicken-tenders
+      image = assets/menu/chicken-tenders.jpg
+
+    If the image does not exist, the shared local placeholder is shown automatically.
+  */
+
+  const MENU = [
+  {
+    "id": "selfie-chai",
+    "cat": "tj-hot-beverages",
+    "price": "1.50|2.50",
+    "en": {
+      "name": "Selfie Chai",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شاي سيلفي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "samavor-tea",
+    "cat": "tj-hot-beverages",
+    "price": "2.00",
+    "en": {
+      "name": "Samavor Tea",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شاي سماور",
+      "desc": ""
+    }
+  },
+  {
+    "id": "royal-sulaimani",
+    "cat": "tj-hot-beverages",
+    "price": "2.50|4.00",
+    "en": {
+      "name": "Royal Sulaimani",
+      "desc": ""
+    },
+    "ar": {
+      "name": "رويال سليماني",
+      "desc": ""
+    }
+  },
+  {
+    "id": "matka-chai",
+    "cat": "tj-hot-beverages",
+    "price": "5.00",
+    "en": {
+      "name": "Matka Chai",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شاي مدكا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "zafran-tea",
+    "cat": "tj-hot-beverages",
+    "price": "2.50|4.00",
+    "en": {
+      "name": "Zafran Tea",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شاي زعفران",
+      "desc": ""
+    }
+  },
+  {
+    "id": "kashmiri-tea",
+    "cat": "tj-hot-beverages",
+    "price": "4.00|5.00",
+    "en": {
+      "name": "Kashmiri Tea",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شاي كشميري",
+      "desc": ""
+    }
+  },
+  {
+    "id": "black-tea",
+    "cat": "tj-hot-beverages",
+    "price": "1.00|2.00",
+    "en": {
+      "name": "Black Tea",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شاي اسود",
+      "desc": ""
+    }
+  },
+  {
+    "id": "ginger-tea",
+    "cat": "tj-hot-beverages",
+    "price": "2.00|3.00",
+    "en": {
+      "name": "Ginger Tea",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شاي زنجبيل",
+      "desc": ""
+    }
+  },
+  {
+    "id": "green-tea",
+    "cat": "tj-hot-beverages",
+    "price": "1.00|2.00",
+    "en": {
+      "name": "Green Tea",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شاي اخضر",
+      "desc": ""
+    }
+  },
+  {
+    "id": "milk-zafran",
+    "cat": "tj-hot-beverages",
+    "price": "4.00|5.00",
+    "en": {
+      "name": "Milk Zafran",
+      "desc": ""
+    },
+    "ar": {
+      "name": "حليب زعفران",
+      "desc": ""
+    }
+  },
+  {
+    "id": "coffee",
+    "cat": "tj-hot-beverages",
+    "price": "4.00",
+    "en": {
+      "name": "Coffee",
+      "desc": ""
+    },
+    "ar": {
+      "name": "قهوة",
+      "desc": ""
+    }
+  },
+  {
+    "id": "black-coffee",
+    "cat": "tj-hot-beverages",
+    "price": "2.00|3.00",
+    "en": {
+      "name": "Black Coffee",
+      "desc": ""
+    },
+    "ar": {
+      "name": "قهوة اسود",
+      "desc": ""
+    }
+  },
+  {
+    "id": "horlicks",
+    "cat": "tj-hot-beverages",
+    "price": "5.00|6.00",
+    "en": {
+      "name": "Horlicks",
+      "desc": ""
+    },
+    "ar": {
+      "name": "هورليكس",
+      "desc": ""
+    }
+  },
+  {
+    "id": "boost",
+    "cat": "tj-hot-beverages",
+    "price": "5.00|6.00",
+    "en": {
+      "name": "Boost",
+      "desc": ""
+    },
+    "ar": {
+      "name": "بوست",
+      "desc": ""
+    }
+  },
+  {
+    "id": "hot-chocolate",
+    "cat": "tj-hot-beverages",
+    "price": "5.00",
+    "en": {
+      "name": "Hot Chocolate",
+      "desc": ""
+    },
+    "ar": {
+      "name": "هوت شوكولاته",
+      "desc": ""
+    }
+  },
+  {
+    "id": "spicy-sulaimani",
+    "cat": "tj-hot-beverages",
+    "price": "3.00|5.00",
+    "en": {
+      "name": "Spicy Sulaimani",
+      "desc": ""
+    },
+    "ar": {
+      "name": "سبايسي سليماني",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tiktok",
+    "cat": "tj-hot-beverages",
+    "price": "3.00|5.00",
+    "en": {
+      "name": "Tiktok",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تيك توك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "chicken-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "8.00",
+    "en": {
+      "name": "Chicken Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "دجاج راب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "chilly-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "9.00",
+    "en": {
+      "name": "Chilly Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شيلي راب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "special-chilly-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "11.00",
+    "en": {
+      "name": "Special Chilly Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شيلي خاص راب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "magic-bite",
+    "cat": "wrap-sandwiches",
+    "price": "11.00",
+    "en": {
+      "name": "Magic Bite",
+      "desc": ""
+    },
+    "ar": {
+      "name": "ماجيك بايت",
+      "desc": ""
+    }
+  },
+  {
+    "id": "veg-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "9.00",
+    "en": {
+      "name": "Veg. Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "خضار راب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "egg-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "9.00",
+    "en": {
+      "name": "Egg Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "بيض راب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "omelette-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "9.00",
+    "en": {
+      "name": "Omelette Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "بيض مقلي راب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "hotdog-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "9.00",
+    "en": {
+      "name": "Hotdog Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "نقانق راب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "beef-hotdog-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "9.00",
+    "en": {
+      "name": "Beef Hotdog Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "لحم بقر نقانق راب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tandoori-mexicy",
+    "cat": "wrap-sandwiches",
+    "price": "18.00",
+    "en": {
+      "name": "Tandoori Mexicy",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تندوري مكسيكي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-popcorn-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Tj Popcorn Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي بوب كورن راب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-zinger-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "18.00",
+    "en": {
+      "name": "Tj Zinger Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي زنجر راب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-kebab-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Tj Kebab Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي كباب راب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-golden-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Tj Golden Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي راب الذهبي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-special-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "20.00",
+    "en": {
+      "name": "Tj Special Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي راب خاص",
+      "desc": ""
+    }
+  },
+  {
+    "id": "chicken-shawarma-kebab-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "18.00",
+    "en": {
+      "name": "Chicken Shawarma Kebab Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "دجاج شاورما كباب راب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-prawns-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Tj Prawns Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي روبيان راب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-chicken-lemon-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Tj Chicken Lemon Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي دجاج ليمون راب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-tikka-wrap",
+    "cat": "wrap-sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Tj Tikka Wrap",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي تكا راب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "zinger-double-burger",
+    "cat": "burgers",
+    "price": "20.00",
+    "en": {
+      "name": "Zinger Double Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر زنجر دبل",
+      "desc": ""
+    }
+  },
+  {
+    "id": "grilled-chicken-burger",
+    "cat": "burgers",
+    "price": "20.00",
+    "en": {
+      "name": "Grilled Chicken Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر دجاج مشوي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "selfie-burger-chicken",
+    "cat": "burgers",
+    "price": "15.00",
+    "en": {
+      "name": "Selfie Burger (chicken)",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر سيلفي دجاج",
+      "desc": ""
+    }
+  },
+  {
+    "id": "healthy-burger",
+    "cat": "burgers",
+    "price": "20.00",
+    "en": {
+      "name": "Healthy Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر الصحي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "angus-beef-burger",
+    "cat": "burgers",
+    "price": "22.00",
+    "en": {
+      "name": "Angus Beef Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر لحم بقر انغوس",
+      "desc": ""
+    }
+  },
+  {
+    "id": "zinger-burger",
+    "cat": "burgers",
+    "price": "16.00",
+    "en": {
+      "name": "Zinger Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر زنجر",
+      "desc": ""
+    }
+  },
+  {
+    "id": "chicken-fantasy-burger",
+    "cat": "burgers",
+    "price": "18.00",
+    "en": {
+      "name": "Chicken Fantasy Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر دجاج فانتازي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "bbq-chicken-burger",
+    "cat": "burgers",
+    "price": "18.00",
+    "en": {
+      "name": "Bbq Chicken Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر دجاج بي بي كيو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tikka-burger",
+    "cat": "burgers",
+    "price": "16.00",
+    "en": {
+      "name": "Tikka Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر تكا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "fish-fillet-burger",
+    "cat": "burgers",
+    "price": "16.00",
+    "en": {
+      "name": "Fish Fillet Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر سمك فيليه",
+      "desc": ""
+    }
+  },
+  {
+    "id": "chicken-fillet-burger",
+    "cat": "burgers",
+    "price": "16.00",
+    "en": {
+      "name": "Chicken Fillet Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر دجاج فيليه",
+      "desc": ""
+    }
+  },
+  {
+    "id": "cajun-burger",
+    "cat": "burgers",
+    "price": "16.00",
+    "en": {
+      "name": "Cajun Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر كاجون",
+      "desc": ""
+    }
+  },
+  {
+    "id": "double-burger-chicken-beef",
+    "cat": "burgers",
+    "price": "16.00",
+    "en": {
+      "name": "Double Burger Chicken/beef",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر دبل دجاج/لحم بقر",
+      "desc": ""
+    }
+  },
+  {
+    "id": "chicken-beef-burger",
+    "cat": "burgers",
+    "price": "8.00|10.00",
+    "en": {
+      "name": "Chicken/beef Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر دجاج/لحم بقر",
+      "desc": ""
+    }
+  },
+  {
+    "id": "vegetable-burger",
+    "cat": "burgers",
+    "price": "8.00|10.00",
+    "en": {
+      "name": "Vegetable Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر خضار",
+      "desc": ""
+    }
+  },
+  {
+    "id": "zinger-chicken-fillet-burger",
+    "cat": "burgers",
+    "price": "18.00",
+    "en": {
+      "name": "Zinger Chicken Fillet Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر زنجر دجاج فيليه",
+      "desc": ""
+    }
+  },
+  {
+    "id": "chicken-lemon-burger",
+    "cat": "burgers",
+    "price": "18.00",
+    "en": {
+      "name": "Chicken Lemon Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر دجاج ليمون",
+      "desc": ""
+    }
+  },
+  {
+    "id": "khaleej-burger",
+    "cat": "burgers",
+    "price": "14.00",
+    "en": {
+      "name": "Khaleej Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر الخليج",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tandoori-chicken-burger",
+    "cat": "burgers",
+    "price": "18.00",
+    "en": {
+      "name": "Tandoori Chicken Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر دجاج تندوري",
+      "desc": ""
+    }
+  },
+  {
+    "id": "smoky-chicken-burger",
+    "cat": "burgers",
+    "price": "18.00",
+    "en": {
+      "name": "Smoky Chicken Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر دجاج سموكي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "smoky-beef-burger",
+    "cat": "burgers",
+    "price": "18.00",
+    "en": {
+      "name": "Smoky Beef Burger",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برجر لحم بقر سموكي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "barq-wa-rad",
+    "cat": "sandwiches",
+    "price": "20.00",
+    "en": {
+      "name": "Barq Wa Rad",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برق و رعد",
+      "desc": ""
+    }
+  },
+  {
+    "id": "prestige-combo",
+    "cat": "sandwiches",
+    "price": "18.00",
+    "en": {
+      "name": "Prestige Combo",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برستيج كومبو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "nuggets-combo",
+    "cat": "sandwiches",
+    "price": "18.00",
+    "en": {
+      "name": "Nuggets Combo",
+      "desc": ""
+    },
+    "ar": {
+      "name": "نقتة كومبو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "butterfly-prawns-combo",
+    "cat": "sandwiches",
+    "price": "18.00",
+    "en": {
+      "name": "Butterfly Prawns Combo",
+      "desc": ""
+    },
+    "ar": {
+      "name": "روبيان بترفلاي كومبو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "chicken-65-combo",
+    "cat": "sandwiches",
+    "price": "18.00",
+    "en": {
+      "name": "Chicken 65 Combo",
+      "desc": ""
+    },
+    "ar": {
+      "name": "دجاج 65 كومبو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "crispy-combo",
+    "cat": "sandwiches",
+    "price": "18.00",
+    "en": {
+      "name": "Crispy Combo",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كريسي كومبو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "kebab-combo",
+    "cat": "sandwiches",
+    "price": "18.00",
+    "en": {
+      "name": "Kebab Combo",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كباب كومبو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "hotdog-combo",
+    "cat": "sandwiches",
+    "price": "18.00",
+    "en": {
+      "name": "Hotdog Combo",
+      "desc": ""
+    },
+    "ar": {
+      "name": "نقانق كومبو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "vegetable-combo",
+    "cat": "sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Vegetable Combo",
+      "desc": ""
+    },
+    "ar": {
+      "name": "خضار كومبو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "kofta-combo",
+    "cat": "sandwiches",
+    "price": "18.00",
+    "en": {
+      "name": "Kofta Combo",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كفتة كومبو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "big-zinger-combo",
+    "cat": "sandwiches",
+    "price": "18.00",
+    "en": {
+      "name": "Big Zinger Combo",
+      "desc": ""
+    },
+    "ar": {
+      "name": "زنجر كومبو العملاق",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-special-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "20.00",
+    "en": {
+      "name": "Tj Special Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي خاص براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "chilly-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "6.00",
+    "en": {
+      "name": "Chilly Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شيلي براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "special-chilly-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "7.00",
+    "en": {
+      "name": "Special Chilly Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شيلي خاص براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "beef-chilly-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "7.00",
+    "en": {
+      "name": "Beef Chilly Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "لحم بقر شيلي براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "sp-beef-chilly-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "8.00",
+    "en": {
+      "name": "Sp. Beef Chilly Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "لحم بقر شيلي خاص براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "omelette-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "5.00",
+    "en": {
+      "name": "Omelette Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "بيض مقلي براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "chicken-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "5.00",
+    "en": {
+      "name": "Chicken Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "دجاج براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "egg-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "5.00",
+    "en": {
+      "name": "Egg Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "بيض براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "hotdog-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "5.00",
+    "en": {
+      "name": "Hotdog Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "نقانق براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "oman-chips-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "4.00",
+    "en": {
+      "name": "Oman Chips Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "بطاطا عمان براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "beef-hotdog-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "6.00",
+    "en": {
+      "name": "Beef Hotdog Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "لحم بقر نقانق براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-kebab-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Tj Kebab Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي كباب براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-cajun-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Tj Cajun Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي كاجون براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-golden-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Tj Golden Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي الذهبي براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-matafi-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "18.00",
+    "en": {
+      "name": "Tj Matafi Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي مطافي براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-lemon-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Tj Lemon Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي ليمون براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-tikka-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Tj Tikka Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي تكا براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-popcorn-paratha",
+    "cat": "paratha-sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Tj Popcorn Paratha",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي بوبكورن براتا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "hangover-cure",
+    "cat": "healthy-juices",
+    "price": "18.00|22.00",
+    "en": {
+      "name": "Hangover Cure",
+      "desc": ""
+    },
+    "ar": {
+      "name": "علاج هانغ اوفر",
+      "desc": ""
+    }
+  },
+  {
+    "id": "power-booster",
+    "cat": "healthy-juices",
+    "price": "18.00|22.00",
+    "en": {
+      "name": "Power Booster",
+      "desc": ""
+    },
+    "ar": {
+      "name": "رافع القوة",
+      "desc": ""
+    }
+  },
+  {
+    "id": "juice-salvation",
+    "cat": "healthy-juices",
+    "price": "18.00|22.00",
+    "en": {
+      "name": "Juice Salvation",
+      "desc": ""
+    },
+    "ar": {
+      "name": "جيوس سيلفيشن",
+      "desc": ""
+    }
+  },
+  {
+    "id": "iron-booster",
+    "cat": "healthy-juices",
+    "price": "18.00|22.00",
+    "en": {
+      "name": "Iron Booster",
+      "desc": ""
+    },
+    "ar": {
+      "name": "المقوي الحديدي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "liver-cure",
+    "cat": "healthy-juices",
+    "price": "18.00|22.00",
+    "en": {
+      "name": "Liver Cure",
+      "desc": ""
+    },
+    "ar": {
+      "name": "علاج كبد",
+      "desc": ""
+    }
+  },
+  {
+    "id": "by-four",
+    "cat": "healthy-juices",
+    "price": "18.00|22.00",
+    "en": {
+      "name": "By Four",
+      "desc": ""
+    },
+    "ar": {
+      "name": "بالحلوة اربعة",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-family-club",
+    "cat": "club-sandwiches",
+    "price": "32.00",
+    "en": {
+      "name": "Tj Family Club",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كلوب تي جي العائلية",
+      "desc": ""
+    }
+  },
+  {
+    "id": "masafi-club",
+    "cat": "club-sandwiches",
+    "price": "30.00",
+    "en": {
+      "name": "Masafi Club",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كلوب مسافي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "kebab-club",
+    "cat": "club-sandwiches",
+    "price": "20.00",
+    "en": {
+      "name": "Kebab Club",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كلوب كباب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "zinger-club",
+    "cat": "club-sandwiches",
+    "price": "20.00",
+    "en": {
+      "name": "Zinger Club",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كلوب زنجر",
+      "desc": ""
+    }
+  },
+  {
+    "id": "beef-club",
+    "cat": "club-sandwiches",
+    "price": "18.00",
+    "en": {
+      "name": "Beef Club",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كلوب لحم بقر",
+      "desc": ""
+    }
+  },
+  {
+    "id": "selfie-club",
+    "cat": "club-sandwiches",
+    "price": "22.00",
+    "en": {
+      "name": "Selfie Club",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كلوب سيلفي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "burj-al-arab-club",
+    "cat": "club-sandwiches",
+    "price": "22.00",
+    "en": {
+      "name": "Burj Al Arab Club",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كلوب برج العرب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "vegetable-club",
+    "cat": "club-sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Vegetable Club",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كلوب خضار",
+      "desc": ""
+    }
+  },
+  {
+    "id": "omelette-club",
+    "cat": "club-sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Omelette Club",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كلوب بيض مقلي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "chicken-club",
+    "cat": "club-sandwiches",
+    "price": "18.00",
+    "en": {
+      "name": "Chicken Club",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كلوب دجاج",
+      "desc": ""
+    }
+  },
+  {
+    "id": "hotdog-club",
+    "cat": "club-sandwiches",
+    "price": "16.00",
+    "en": {
+      "name": "Hotdog Club",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كلوب نقانق",
+      "desc": ""
+    }
+  },
+  {
+    "id": "passion-mango",
+    "cat": "mix-juices",
+    "price": "16.00",
+    "en": {
+      "name": "Passion Mango",
+      "desc": ""
+    },
+    "ar": {
+      "name": "باشن مانجو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "burgos",
+    "cat": "mix-juices",
+    "price": "16.00",
+    "en": {
+      "name": "Burgos",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برغوس",
+      "desc": ""
+    }
+  },
+  {
+    "id": "florence",
+    "cat": "mix-juices",
+    "price": "16.00",
+    "en": {
+      "name": "Florence",
+      "desc": ""
+    },
+    "ar": {
+      "name": "فلورانس",
+      "desc": ""
+    }
+  },
+  {
+    "id": "abood",
+    "cat": "mix-juices",
+    "price": "14.00",
+    "en": {
+      "name": "Abood",
+      "desc": ""
+    },
+    "ar": {
+      "name": "عبود",
+      "desc": ""
+    }
+  },
+  {
+    "id": "habeebi",
+    "cat": "mix-juices",
+    "price": "14.00",
+    "en": {
+      "name": "Habeebi",
+      "desc": ""
+    },
+    "ar": {
+      "name": "حبيبي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "dil-se",
+    "cat": "mix-juices",
+    "price": "14.00",
+    "en": {
+      "name": "Dil Se",
+      "desc": ""
+    },
+    "ar": {
+      "name": "ديل سي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "go-man-go",
+    "cat": "mix-juices",
+    "price": "14.00",
+    "en": {
+      "name": "Go Man Go",
+      "desc": ""
+    },
+    "ar": {
+      "name": "جو مان جو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "20-x-20",
+    "cat": "mix-juices",
+    "price": "14.00",
+    "en": {
+      "name": "20 X 20",
+      "desc": ""
+    },
+    "ar": {
+      "name": "20 × 20",
+      "desc": ""
+    }
+  },
+  {
+    "id": "heart-pain",
+    "cat": "mix-juices",
+    "price": "14.00",
+    "en": {
+      "name": "Heart Pain",
+      "desc": ""
+    },
+    "ar": {
+      "name": "هارت باين",
+      "desc": ""
+    }
+  },
+  {
+    "id": "nari-nari",
+    "cat": "mix-juices",
+    "price": "14.00",
+    "en": {
+      "name": "Nari Nari",
+      "desc": ""
+    },
+    "ar": {
+      "name": "ناري ناري",
+      "desc": ""
+    }
+  },
+  {
+    "id": "ahlan",
+    "cat": "mix-juices",
+    "price": "14.00",
+    "en": {
+      "name": "Ahlan",
+      "desc": ""
+    },
+    "ar": {
+      "name": "اهلن",
+      "desc": ""
+    }
+  },
+  {
+    "id": "czechoslovakia",
+    "cat": "mix-juices",
+    "price": "16.00",
+    "en": {
+      "name": "Czechoslovakia",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شيكوسلوفاكيا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "zaragoza",
+    "cat": "mix-juices",
+    "price": "16.00",
+    "en": {
+      "name": "Zaragoza",
+      "desc": ""
+    },
+    "ar": {
+      "name": "زاراغوسا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "santiago",
+    "cat": "mix-juices",
+    "price": "16.00",
+    "en": {
+      "name": "Santiago",
+      "desc": ""
+    },
+    "ar": {
+      "name": "سانتياغو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "shakomako",
+    "cat": "mix-juices",
+    "price": "16.00",
+    "en": {
+      "name": "Shakomako",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شاكوماكو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "cordoba",
+    "cat": "mix-juices",
+    "price": "16.00",
+    "en": {
+      "name": "Cordoba",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كوردوبا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "juice-avocado",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Juice Avocado",
+      "desc": ""
+    },
+    "ar": {
+      "name": "أفوكادو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "papaya-juice",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Papaya Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "بابايا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "grape-juice",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Grape Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "عنب",
+      "desc": ""
+    }
+  },
+  {
+    "id": "chikku-juice",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Chikku Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شيكو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "strawberry-juice",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Strawberry Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "فراوله",
+      "desc": ""
+    }
+  },
+  {
+    "id": "sweet-melon-juice",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Sweet Melon Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شمام",
+      "desc": ""
+    }
+  },
+  {
+    "id": "apple-juice",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Apple Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تفاح",
+      "desc": ""
+    }
+  },
+  {
+    "id": "pomegranate-juice",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Pomegranate Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "رمان",
+      "desc": ""
+    }
+  },
+  {
+    "id": "orange-juice",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Orange Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "برتقال",
+      "desc": ""
+    }
+  },
+  {
+    "id": "mango-juice",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Mango Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "مانجو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "cocktail-juice",
+    "cat": "fresh-juice",
+    "price": "13.00|15.00",
+    "en": {
+      "name": "Cocktail Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كوكتيل",
+      "desc": ""
+    }
+  },
+  {
+    "id": "carrot-juice",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Carrot Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "جزر",
+      "desc": ""
+    }
+  },
+  {
+    "id": "pineapple-juice",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Pineapple Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "أناناس",
+      "desc": ""
+    }
+  },
+  {
+    "id": "guava-juice",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Guava Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "جوافة",
+      "desc": ""
+    }
+  },
+  {
+    "id": "beetroot-juice",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Beetroot Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شمندر",
+      "desc": ""
+    }
+  },
+  {
+    "id": "banana-juice",
+    "cat": "fresh-juice",
+    "price": "8.00|10.00",
+    "en": {
+      "name": "Banana Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "موز",
+      "desc": ""
+    }
+  },
+  {
+    "id": "kiwi-juice",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Kiwi Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كيوي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "watermelon-juice",
+    "cat": "fresh-juice",
+    "price": "12.00|14.00",
+    "en": {
+      "name": "Watermelon Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "بطيخ",
+      "desc": ""
+    }
+  },
+  {
+    "id": "special-falooda",
+    "cat": "falooda",
+    "price": "18.00",
+    "en": {
+      "name": "Special Falooda",
+      "desc": ""
+    },
+    "ar": {
+      "name": "فالوده خاص",
+      "desc": ""
+    }
+  },
+  {
+    "id": "kulfi-falooda",
+    "cat": "falooda",
+    "price": "16.00",
+    "en": {
+      "name": "Kulfi Falooda",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كلفي فالوده",
+      "desc": ""
+    }
+  },
+  {
+    "id": "glory",
+    "cat": "falooda",
+    "price": "16.00",
+    "en": {
+      "name": "Glory",
+      "desc": ""
+    },
+    "ar": {
+      "name": "جلوري",
+      "desc": ""
+    }
+  },
+  {
+    "id": "mix-flavour",
+    "cat": "falooda",
+    "price": "14.00",
+    "en": {
+      "name": "Mix Flavour",
+      "desc": ""
+    },
+    "ar": {
+      "name": "ميكس فلافور",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tom-jerry",
+    "cat": "falooda",
+    "price": "16.00",
+    "en": {
+      "name": "Tom & Jerry",
+      "desc": ""
+    },
+    "ar": {
+      "name": "توم اند جري",
+      "desc": ""
+    }
+  },
+  {
+    "id": "crazy-falooda",
+    "cat": "falooda",
+    "price": "14.00",
+    "en": {
+      "name": "Crazy Falooda",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كريزي فالوده",
+      "desc": ""
+    }
+  },
+  {
+    "id": "mango-falooda",
+    "cat": "falooda",
+    "price": "14.00",
+    "en": {
+      "name": "Mango Falooda",
+      "desc": ""
+    },
+    "ar": {
+      "name": "مانجو فالوده",
+      "desc": ""
+    }
+  },
+  {
+    "id": "bottle-juice-1-5-ltr",
+    "cat": "falooda",
+    "price": "35.00",
+    "en": {
+      "name": "Bottle Juice (1.5 Ltr)",
+      "desc": ""
+    },
+    "ar": {
+      "name": "عصير الخرش (1.5 لتر)",
+      "desc": ""
+    }
+  },
+  {
+    "id": "royal-falooda",
+    "cat": "falooda",
+    "price": "16.00",
+    "en": {
+      "name": "Royal Falooda",
+      "desc": ""
+    },
+    "ar": {
+      "name": "رويال فالوده",
+      "desc": ""
+    }
+  },
+  {
+    "id": "passion-fruit-mojito",
+    "cat": "mojito",
+    "price": "16.00",
+    "en": {
+      "name": "Passion Fruit Mojito",
+      "desc": ""
+    },
+    "ar": {
+      "name": "باشن فروت موهيتو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "strawberry-mojito",
+    "cat": "mojito",
+    "price": "16.00",
+    "en": {
+      "name": "Strawberry Mojito",
+      "desc": ""
+    },
+    "ar": {
+      "name": "فراوله موهيتو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "pomegranate-mojito",
+    "cat": "mojito",
+    "price": "16.00",
+    "en": {
+      "name": "Pomegranate Mojito",
+      "desc": ""
+    },
+    "ar": {
+      "name": "رمان موهيتو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "pineapple-mojito",
+    "cat": "mojito",
+    "price": "16.00",
+    "en": {
+      "name": "Pineapple Mojito",
+      "desc": ""
+    },
+    "ar": {
+      "name": "اناناس موهيتو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "7up-mint-mojito",
+    "cat": "mojito",
+    "price": "16.00",
+    "en": {
+      "name": "7up Mint Mojito",
+      "desc": ""
+    },
+    "ar": {
+      "name": "7 اب نعناع موهيتو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "nannari-kuluki",
+    "cat": "sarbath",
+    "price": "10.00",
+    "en": {
+      "name": "Nannari Kuluki",
+      "desc": ""
+    },
+    "ar": {
+      "name": "نـناري كولكي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "passion-fruit-kuluki",
+    "cat": "sarbath",
+    "price": "10.00",
+    "en": {
+      "name": "Passion Fruit Kuluki",
+      "desc": ""
+    },
+    "ar": {
+      "name": "باشن فروت كولكي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "pineapple-kuluki",
+    "cat": "sarbath",
+    "price": "10.00",
+    "en": {
+      "name": "Pineapple Kuluki",
+      "desc": ""
+    },
+    "ar": {
+      "name": "اناناس كولكي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "grape-kuluki",
+    "cat": "sarbath",
+    "price": "10.00",
+    "en": {
+      "name": "Grape Kuluki",
+      "desc": ""
+    },
+    "ar": {
+      "name": "عنب كولكي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "kudam-kulukki",
+    "cat": "sarbath",
+    "price": "15.00",
+    "en": {
+      "name": "Kudam Kulukki",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كدم كولكي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "avil-milk",
+    "cat": "sarbath",
+    "price": "12.00",
+    "en": {
+      "name": "Avil Milk",
+      "desc": ""
+    },
+    "ar": {
+      "name": "حليب اول",
+      "desc": ""
+    }
+  },
+  {
+    "id": "nannari-sarbath",
+    "cat": "sarbath",
+    "price": "5.00",
+    "en": {
+      "name": "Nannari Sarbath",
+      "desc": ""
+    },
+    "ar": {
+      "name": "نـناري سريبت",
+      "desc": ""
+    }
+  },
+  {
+    "id": "nannari-soda-sarbath",
+    "cat": "sarbath",
+    "price": "6.00",
+    "en": {
+      "name": "Nannari Soda Sarbath",
+      "desc": ""
+    },
+    "ar": {
+      "name": "نـناري صودا سريبت",
+      "desc": ""
+    }
+  },
+  {
+    "id": "nannari-milk-sarbath",
+    "cat": "sarbath",
+    "price": "10.00",
+    "en": {
+      "name": "Nannari Milk Sarbath",
+      "desc": ""
+    },
+    "ar": {
+      "name": "نـناري حليب سريبت",
+      "desc": ""
+    }
+  },
+  {
+    "id": "naruneendi-sarbath",
+    "cat": "sarbath",
+    "price": "6.00",
+    "en": {
+      "name": "Naruneendi Sarbath",
+      "desc": ""
+    },
+    "ar": {
+      "name": "نارونيـندي سريبت",
+      "desc": ""
+    }
+  },
+  {
+    "id": "naruneendi-soda-sarbath",
+    "cat": "sarbath",
+    "price": "7.00",
+    "en": {
+      "name": "Naruneendi Soda Sarbath",
+      "desc": ""
+    },
+    "ar": {
+      "name": "نارونيـندي صودا سريبت",
+      "desc": ""
+    }
+  },
+  {
+    "id": "naruneendi-milk-sarbath",
+    "cat": "sarbath",
+    "price": "10.00",
+    "en": {
+      "name": "Naruneendi Milk Sarbath",
+      "desc": ""
+    },
+    "ar": {
+      "name": "نارونيـندي حليب سريبت",
+      "desc": ""
+    }
+  },
+  {
+    "id": "lemon-juice",
+    "cat": "sarbath",
+    "price": "6.00",
+    "en": {
+      "name": "Lemon Juice",
+      "desc": ""
+    },
+    "ar": {
+      "name": "عصير ليمون",
+      "desc": ""
+    }
+  },
+  {
+    "id": "lemon-mint",
+    "cat": "sarbath",
+    "price": "7.00",
+    "en": {
+      "name": "Lemon Mint",
+      "desc": ""
+    },
+    "ar": {
+      "name": "ليمون نعناع",
+      "desc": ""
+    }
+  },
+  {
+    "id": "ginger-lime",
+    "cat": "sarbath",
+    "price": "7.00",
+    "en": {
+      "name": "Ginger Lime",
+      "desc": ""
+    },
+    "ar": {
+      "name": "ليمون زنجبيل",
+      "desc": ""
+    }
+  },
+  {
+    "id": "red-yellow-lime",
+    "cat": "sarbath",
+    "price": "6.00",
+    "en": {
+      "name": "Red Yellow Lime",
+      "desc": ""
+    },
+    "ar": {
+      "name": "ليمون ريد يلو",
+      "desc": ""
+    }
+  },
+  {
+    "id": "lime-soda",
+    "cat": "sarbath",
+    "price": "7.00",
+    "en": {
+      "name": "Lime Soda",
+      "desc": ""
+    },
+    "ar": {
+      "name": "ليمون صودا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "lime-mint-soda",
+    "cat": "sarbath",
+    "price": "7.00",
+    "en": {
+      "name": "Lime Mint Soda",
+      "desc": ""
+    },
+    "ar": {
+      "name": "ليمون نعناع صودا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "ginger-lime-mint-soda",
+    "cat": "sarbath",
+    "price": "8.00",
+    "en": {
+      "name": "Ginger Lime Mint Soda",
+      "desc": ""
+    },
+    "ar": {
+      "name": "ليمون زنجبيل نعناع صودا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "malta-soda",
+    "cat": "sarbath",
+    "price": "10.00",
+    "en": {
+      "name": "Malta Soda",
+      "desc": ""
+    },
+    "ar": {
+      "name": "مالتا صودا",
+      "desc": ""
+    }
+  },
+  {
+    "id": "fukri",
+    "cat": "sarbath",
+    "price": "12.00",
+    "en": {
+      "name": "Fukri",
+      "desc": ""
+    },
+    "ar": {
+      "name": "فوكري",
+      "desc": ""
+    }
+  },
+  {
+    "id": "matka-lassi",
+    "cat": "lassi",
+    "price": "10.00",
+    "en": {
+      "name": "Matka Lassi",
+      "desc": ""
+    },
+    "ar": {
+      "name": "مدكا لسي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "avocado-lassi",
+    "cat": "lassi",
+    "price": "9.00",
+    "en": {
+      "name": "Avocado Lassi",
+      "desc": ""
+    },
+    "ar": {
+      "name": "افوكادو لسي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "mango-lassi",
+    "cat": "lassi",
+    "price": "9.00",
+    "en": {
+      "name": "Mango Lassi",
+      "desc": ""
+    },
+    "ar": {
+      "name": "مانجو لسي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "strawberry-lassi",
+    "cat": "lassi",
+    "price": "9.00",
+    "en": {
+      "name": "Strawberry Lassi",
+      "desc": ""
+    },
+    "ar": {
+      "name": "فراوله لسي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "banana-lassi",
+    "cat": "lassi",
+    "price": "9.00",
+    "en": {
+      "name": "Banana Lassi",
+      "desc": ""
+    },
+    "ar": {
+      "name": "موز لسي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "sweet-lassi",
+    "cat": "lassi",
+    "price": "9.00",
+    "en": {
+      "name": "Sweet Lassi",
+      "desc": ""
+    },
+    "ar": {
+      "name": "حلو لسي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "guava-lassi",
+    "cat": "lassi",
+    "price": "9.00",
+    "en": {
+      "name": "Guava Lassi",
+      "desc": ""
+    },
+    "ar": {
+      "name": "جوافة لسي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "hyderabadi-lassi",
+    "cat": "lassi",
+    "price": "9.00",
+    "en": {
+      "name": "Hyderabadi Lassi",
+      "desc": ""
+    },
+    "ar": {
+      "name": "حيدرابادي لسي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "zafran-lassi",
+    "cat": "lassi",
+    "price": "9.00",
+    "en": {
+      "name": "Zafran Lassi",
+      "desc": ""
+    },
+    "ar": {
+      "name": "زعفران لسي",
+      "desc": ""
+    }
+  },
+  {
+    "id": "mango-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Mango Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "مانجو شيك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "avocado-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Avocado Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "افوكادو شيك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "oreo-milk-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Oreo Milk Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "اوريو حليب شيك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "galaxy-super-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Galaxy Super Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "جالكسي سوبر شيك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "tj-lotus-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Tj Lotus Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "تي جي لوتس شيك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "sharjah-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Sharjah Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شيك الشارقة",
+      "desc": ""
+    }
+  },
+  {
+    "id": "3d-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "3d Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "ثري دي شيك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "angel-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Angel Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "انجل شيك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "royal-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Royal Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "رويال شيك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "lotus-lovely-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Lotus Lovely Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "لوتس لاولي شيك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "snicker-deluxe-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Snicker Deluxe Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "سنيكرز ديلوكس شيك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "nutella-choco-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Nutella Choco Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "نوتيلا شوكو شيك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "kitkat-break-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Kitkat Break Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "كيت كات بريك شيك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "chikku-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Chikku Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "شيكو شيك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "guava-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Guava Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "جوافة شيك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "banana-shake",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Banana Shake",
+      "desc": ""
+    },
+    "ar": {
+      "name": "موز شيك",
+      "desc": ""
+    }
+  },
+  {
+    "id": "cold-coffee",
+    "cat": "shake",
+    "price": "16.00",
+    "en": {
+      "name": "Cold Coffee",
+      "desc": ""
+    },
+    "ar": {
+      "name": "قهوة الثلج",
+      "desc": ""
+    }
+  }
+];
+
+  const categoryOrder = ["tj-hot-beverages", "wrap-sandwiches", "burgers", "sandwiches", "paratha-sandwiches", "healthy-juices", "club-sandwiches", "mix-juices", "fresh-juice", "falooda", "mojito", "sarbath", "lassi", "shake"];
+
+  let currentLang = localStorage.getItem("kow-menu-lang") || "en";
+  if(!["en","ar"].includes(currentLang)) currentLang = "en";
+
+  const menuContent = document.getElementById("menuContent");
+  const categoryTrack = document.getElementById("categoryTrack");
+  const categorySheetList = document.getElementById("categorySheetList");
+  const noResults = document.getElementById("noResults");
+
+  function esc(v=""){
+    return String(v).replace(/[&<>"']/g,m=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",
+      "\"":"&quot;","'":"&#039;"
+    }[m]));
+  }
+
+  function itemImage(id){
+    return `assets/menu/${id}.jpg`;
+  }
+
+  function money(value){
+    const formatted = String(value).split("|").map(v=>`AED ${v.trim()}`).join(" | ");
+    return formatted;
+  }
+
+  function renderCategories(){
+    categoryTrack.innerHTML = categoryOrder.map((cat,i)=>`
+      <button class="category-btn ${i===0?"active":""}" data-cat="${cat}">
+        ${esc(CAT[cat][currentLang])}
+      </button>
+    `).join("");
+
+    categorySheetList.innerHTML = categoryOrder.map((cat,i)=>`
+      <button class="category-sheet-btn ${i===0?"active":""}" data-cat="${cat}">
+        <span>${esc(CAT[cat][currentLang])}</span>
+        <span class="check">${i===0?"✓":""}</span>
+      </button>
+    `).join("");
+
+    categoryTrack.scrollLeft = 0;
+
+    document.querySelectorAll("[data-cat]").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        const cat = btn.dataset.cat;
+        closeOverlay("categoryOverlay");
+        scrollToCategory(cat);
+      });
+    });
+
+    requestAnimationFrame(syncStickyStackHeight);
+  }
+
+  /*
+    CATEGORY DISPLAY CONTROL
+    -------------------------
+    Controls how many products appear in each category section.
+
+    Pattern:
+    Category 1 = 2 items
+    Category 2 = 3 items
+    Category 3 = 2 items
+    Category 4 = 3 items
+    ...continues alternately
+
+    Change the numbers below anytime if required.
+  */
+  const CATEGORY_ITEM_LIMITS = categoryOrder.map((cat, index)=>{
+    return index % 2 === 0 ? 2 : 3;
+  });
+
+  function renderMenu(){
+    let totalVisible = 0;
+
+    menuContent.innerHTML = categoryOrder.map((cat, index)=>{
+      const allItems = MENU.filter(item=>item.cat===cat);
+      const limit = CATEGORY_ITEM_LIMITS[index] || allItems.length;
+      const items = allItems.slice(0, limit);
+
+      if(!items.length) return "";
+      totalVisible += items.length;
+
+      return `
+        <section class="menu-section" id="section-${cat}" data-section-cat="${cat}">
+          <h2 class="section-title">${esc(CAT[cat][currentLang])}</h2>
+          <div class="product-grid">
+            ${items.map(productCard).join("")}
+          </div>
+        </section>
+      `;
+    }).join("");
+
+    noResults.classList.toggle("show", totalVisible===0);
+
+    menuContent.querySelectorAll(".product-card").forEach(card=>{
+      card.addEventListener("click",()=>openProduct(card.dataset.id));
+      card.addEventListener("keydown",e=>{
+        if(e.key==="Enter" || e.key===" "){
+          e.preventDefault();
+          openProduct(card.dataset.id);
+        }
+      });
+    });
+
+    observeSections();
+  }
+
+  function productCard(item){
+    const t = item[currentLang];
+    return `
+      <article class="product-card" data-id="${item.id}" tabindex="0" role="button">
+        <div class="product-image">
+          <img
+            src="${itemImage(item.id)}"
+            alt="${esc(t.name)}"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='assets/menu/placeholder.svg';"
+          >
+        </div>
+
+        <div class="product-body">
+          <h3 class="product-name">${esc(t.name)}</h3>
+          <p class="dietary">${item.dietary ? esc(typeof item.dietary === "object" ? (item.dietary[currentLang] || "") : item.dietary) : ""}</p>
+          ${t.desc ? `<p class="product-desc">${esc(t.desc)}</p>` : `<p class="product-desc">&nbsp;</p>`}
+          ${item.badge ? `<span class="custom-badge">${esc(UI[currentLang].custom)}</span>` : ""}
+          <div class="price-row">
+            <span class="price">${money(item.price)}</span>
+            ${item.oldPrice ? `<span class="old-price">${money(item.oldPrice)}</span>` : ""}
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  function openProduct(id){
+    const item = MENU.find(x=>x.id===id);
+    if(!item) return;
+
+    const t = item[currentLang];
+
+    const modifiers = item.modifiers
+      ? item.modifiers[currentLang].map(m=>`
+          <div class="modifier">
+            <h3>${esc(m[0])}</h3>
+            <p>${esc(m[1])}</p>
+          </div>
+        `).join("")
+      : "";
+
+    document.getElementById("detailBody").innerHTML = `
+      <div class="detail-image">
+        <img
+          src="${itemImage(item.id)}"
+          alt="${esc(t.name)}"
+          onerror="this.onerror=null;this.src='assets/menu/placeholder.svg';"
+        >
+      </div>
+
+      <div class="detail-content">
+        <div class="detail-category">${esc(CAT[item.cat][currentLang])}</div>
+        <h2>${esc(t.name)}</h2>
+        <div class="detail-price">${money(item.price)}</div>
+        ${t.desc ? `<p class="detail-desc">${esc(t.desc)}</p>` : ""}
+        ${modifiers}
+      </div>
+    `;
+
+    openOverlay("detailOverlay");
+  }
+
+  function setLanguage(lang){
+    currentLang = lang;
+    localStorage.setItem("kow-menu-lang",lang);
+
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang==="ar" ? "rtl" : "ltr";
+
+    document.querySelectorAll("[data-ui]").forEach(el=>{
+      const key = el.dataset.ui;
+      if(UI[lang][key]) el.textContent = UI[lang][key];
+    });
+
+    document.getElementById("introText").textContent = UI[lang].intro;
+    noResults.textContent = UI[lang].noResults;
+
+    document.querySelectorAll(".language-option").forEach(btn=>{
+      const active = btn.dataset.lang===lang;
+      btn.classList.toggle("active",active);
+      btn.querySelector(".check").textContent = active ? "✓" : "";
+    });
+
+    renderCategories();
+    renderMenu();
+    closeOverlay("languageOverlay");
+  }
+
+  function setActiveCategory(cat){
+    document.querySelectorAll(".category-btn").forEach(btn=>{
+      const active = btn.dataset.cat===cat;
+      btn.classList.toggle("active",active);
+    });
+
+    document.querySelectorAll(".category-sheet-btn").forEach(btn=>{
+      const active = btn.dataset.cat===cat;
+      btn.classList.toggle("active",active);
+      btn.querySelector(".check").textContent = active ? "✓" : "";
+    });
+  }
+
+  let categoryScrollTicking = false;
+  let isProgrammaticCategoryScroll = false;
+  let lockedCategory = null;
+  let currentScrollAnimation = null;
+
+  function getStickyHeight(){
+    const stack = document.querySelector(".sticky-stack");
+    return stack ? Math.ceil(stack.getBoundingClientRect().height) : 112;
+  }
+
+  function appleEase(t){
+    /*
+      Controlled ease-in/ease-out:
+      gentle start, fluid middle movement and a soft landing.
+    */
+    return t < 0.5
+      ? 8 * t * t * t * t
+      : 1 - Math.pow(-2 * t + 2, 4) / 2;
+  }
+
+  function animateWindowScroll(targetY, duration=850){
+    if(currentScrollAnimation){
+      cancelAnimationFrame(currentScrollAnimation);
+      currentScrollAnimation = null;
+    }
+
+    const startY = window.scrollY;
+    const distance = targetY - startY;
+
+    if(Math.abs(distance) < 2){
+      window.scrollTo(0,targetY);
+      return Promise.resolve();
+    }
+
+    if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+      window.scrollTo(0,targetY);
+      return Promise.resolve();
+    }
+
+    return new Promise(resolve=>{
+      const startTime = performance.now();
+
+      function frame(now){
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration,1);
+        const eased = appleEase(progress);
+
+        window.scrollTo(0,startY + distance * eased);
+
+        if(progress < 1){
+          currentScrollAnimation = requestAnimationFrame(frame);
+        }else{
+          currentScrollAnimation = null;
+          resolve();
+        }
+      }
+
+      currentScrollAnimation = requestAnimationFrame(frame);
+    });
+  }
+
+  function scrollCategoryTabIntoView(cat){
+    const btn = categoryTrack.querySelector(`.category-btn[data-cat="${cat}"]`);
+    if(!btn) return;
+
+    const desiredLeft =
+      btn.offsetLeft - (categoryTrack.clientWidth - btn.clientWidth) / 2;
+
+    const maxLeft =
+      Math.max(0,categoryTrack.scrollWidth - categoryTrack.clientWidth);
+
+    const left =
+      Math.max(0,Math.min(desiredLeft,maxLeft));
+
+    categoryTrack.scrollTo({
+      left,
+      behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth"
+    });
+  }
+
+  async function scrollToCategory(cat){
+    const target = document.getElementById("section-" + cat);
+    if(!target) return;
+
+    /*
+      Lock the category BEFORE the first scroll frame.
+      While this is true, scroll tracking is not allowed to select
+      the section we are passing through.
+    */
+    isProgrammaticCategoryScroll = true;
+    lockedCategory = cat;
+
+    setActiveCategory(cat);
+    scrollCategoryTabIntoView(cat);
+
+    const offset = getStickyHeight() + 14;
+    const targetY = Math.max(
+      0,
+      window.scrollY + target.getBoundingClientRect().top - offset
+    );
+
+    const distance = Math.abs(targetY - window.scrollY);
+
+    /*
+      Longer jumps get a little more time, but the animation remains
+      responsive on a phone.
+    */
+    const duration =
+      Math.max(650,Math.min(1050,650 + distance * 0.16));
+
+    await animateWindowScroll(targetY,duration);
+
+    /*
+      Keep the lock for two final paint frames. This prevents the
+      one-frame/fraction-of-a-second previous-category flash.
+    */
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        isProgrammaticCategoryScroll = false;
+        lockedCategory = null;
+        updateActiveCategoryFromScroll();
+      });
+    });
+  }
+
+  function updateActiveCategoryFromScroll(){
+    const sections =
+      [...document.querySelectorAll("[data-section-cat]")];
+
+    if(!sections.length) return;
+
+    if(isProgrammaticCategoryScroll && lockedCategory){
+      setActiveCategory(lockedCategory);
+      return;
+    }
+
+    const threshold = getStickyHeight() + 18;
+    let active = sections[0].dataset.sectionCat;
+
+    for(const section of sections){
+      const top = section.getBoundingClientRect().top;
+
+      if(top <= threshold){
+        active = section.dataset.sectionCat;
+      }else{
+        break;
+      }
+    }
+
+    setActiveCategory(active);
+    scrollCategoryTabIntoView(active);
+  }
+
+  function observeSections(){
+    updateActiveCategoryFromScroll();
+  }
+
+  window.addEventListener("scroll",()=>{
+    if(categoryScrollTicking) return;
+
+    categoryScrollTicking = true;
+
+    requestAnimationFrame(()=>{
+      if(isProgrammaticCategoryScroll && lockedCategory){
+        setActiveCategory(lockedCategory);
+      }else{
+        updateActiveCategoryFromScroll();
+      }
+
+      categoryScrollTicking = false;
+    });
+  },{passive:true});
+
+  /*
+    Manual interaction immediately cancels an automatic category jump.
+  */
+  ["wheel","touchstart"].forEach(eventName=>{
+    window.addEventListener(eventName,()=>{
+      if(!isProgrammaticCategoryScroll) return;
+
+      if(currentScrollAnimation){
+        cancelAnimationFrame(currentScrollAnimation);
+        currentScrollAnimation = null;
+      }
+
+      isProgrammaticCategoryScroll = false;
+      lockedCategory = null;
+      updateActiveCategoryFromScroll();
+    },{passive:true});
+  });
+
+  function closeAllOverlays(exceptId=null){
+    document.querySelectorAll(".overlay.open").forEach(overlay=>{
+      if(overlay.id !== exceptId){
+        overlay.classList.remove("open");
+      }
+    });
+
+    if(!document.querySelector(".overlay.open")){
+      document.body.classList.remove("modal-open");
+    }
+  }
+
+  function openOverlay(id){
+    const target = document.getElementById(id);
+    if(!target) return;
+
+    // Only one bottom popup can be open at a time.
+    closeAllOverlays(id);
+    target.classList.add("open");
+    document.body.classList.add("modal-open");
+  }
+
+  function toggleOverlay(id){
+    const target = document.getElementById(id);
+    if(!target) return;
+
+    if(target.classList.contains("open")){
+      target.classList.remove("open");
+
+      if(!document.querySelector(".overlay.open")){
+        document.body.classList.remove("modal-open");
+      }
+      return;
+    }
+
+    // Opening a different popup automatically closes the current one.
+    closeAllOverlays();
+    target.classList.add("open");
+    document.body.classList.add("modal-open");
+  }
+
+  function closeOverlay(id){
+    const el = document.getElementById(id);
+    if(el) el.classList.remove("open");
+
+    if(!document.querySelector(".overlay.open")){
+      document.body.classList.remove("modal-open");
+    }
+  }
+
+
+
+  document.getElementById("languageBtn").addEventListener("click",()=>toggleOverlay("languageOverlay"));
+  document.getElementById("infoBtn").addEventListener("click",()=>toggleOverlay("infoOverlay"));
+  document.getElementById("categoryMenuBtn").addEventListener("click",()=>toggleOverlay("categoryOverlay"));
+
+  document.querySelectorAll(".language-option").forEach(btn=>{
+    btn.addEventListener("click",()=>setLanguage(btn.dataset.lang));
+  });
+
+  document.querySelectorAll("[data-close]").forEach(btn=>{
+    btn.addEventListener("click",()=>closeOverlay(btn.dataset.close));
+  });
+
+  document.querySelectorAll(".overlay").forEach(overlay=>{
+    overlay.addEventListener("click",e=>{
+      if(e.target===overlay) closeOverlay(overlay.id);
+    });
+  });
+
+  document.addEventListener("keydown",e=>{
+    if(e.key==="Escape"){
+      document.querySelectorAll(".overlay.open").forEach(o=>closeOverlay(o.id));
+    }
+  });
+
+
+
+  function syncStickyStackHeight(){
+    const stack = document.querySelector(".sticky-stack");
+    if(!stack) return;
+
+    const height = Math.ceil(stack.getBoundingClientRect().height);
+    document.documentElement.style.setProperty("--sticky-stack-height", height + "px");
+  }
+
+  // Keep the reserved space exactly equal to the fixed header/category stack.
+  syncStickyStackHeight();
+  window.addEventListener("resize", syncStickyStackHeight);
+
+  if("ResizeObserver" in window){
+    const stickyResizeObserver = new ResizeObserver(syncStickyStackHeight);
+    const stack = document.querySelector(".sticky-stack");
+    if(stack) stickyResizeObserver.observe(stack);
+  }
+
+  setLanguage(currentLang);
+  requestAnimationFrame(syncStickyStackHeight);
+</script>
+</body>
+</html>
