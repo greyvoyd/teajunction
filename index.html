@@ -3643,6 +3643,21 @@
     `;
 
     openOverlay("detailOverlay");
+
+    
+    // Send individual product views to GA4
+    if (typeof gtag === "function") {
+      gtag("event", "view_item", {
+        currency: "AED",
+        items: [{
+          item_id: item.id,
+          item_name: item.en.name,
+          item_category: CAT[item.cat].en,
+          quantity: 1
+        }]
+      });
+    }
+
   }
 
   function setLanguage(lang){
